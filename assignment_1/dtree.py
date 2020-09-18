@@ -1,6 +1,20 @@
 import pandas as pd
 import numpy as np
 import scipy.stats
+import sys
+
+if len(sys.argv < 4):
+    print("Not enough argument passed")
+
+data_dir = str(sys.argv[0])
+try:
+    full_sample_flag = bool(int(sys.argv[0]))
+    maximal_depth = int(sys.argv[0])
+    full_tree_flag = True if maximal_depth == 0 else False
+    GR_flag = bool(int(sys.argv[0]))
+except ValueError:
+    print("Incorrect argument format, should be 0 or 1 for cross validation and >= 0 for depth.")
+
 
 def entropy(data):
     data_amount = data.value_counts()
