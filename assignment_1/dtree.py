@@ -23,7 +23,7 @@ def entropy(data):
 
 
 class ID3Decision_Tree: #Create class about ecision tree node
-	def def __init__(self, parent, child, attribute, split, leaf, depth, branch):
+	def __init__(self, parent, child, attribute, split, leaf, depth, branch):
 		self.parent = parent
 		self.child = child
 		self.attribute = attribute
@@ -51,13 +51,13 @@ class ID3Decision_Tree: #Create class about ecision tree node
 	def insert_depth(self, depth): #depth of the node
 		self.depth = depth
         
-    def IG(self, split, H_split):
-        pass
+    	def IG(self, split, H_split):
+        	pass
 
-    def GR(self, split, y):
-        H_split = entropy(split)
-        IG = self.IG(split, H_split)
-        GR = IG/H_split
+    	def GR(self, split, y):
+        	H_split = entropy(split)
+        	IG = self.IG(split, H_split)
+        	GR = IG/H_split
 		
 
 
