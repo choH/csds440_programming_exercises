@@ -3,7 +3,7 @@ import numpy as np
 import scipy.stats
 import sys
 
-if len(sys.argv < 4):
+if len(sys.argv) < 4:
     print("Not enough argument passed")
 
 data_dir = str(sys.argv[0])
