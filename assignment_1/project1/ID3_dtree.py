@@ -83,6 +83,37 @@ class ID3DecisionTree:
             accuracy = ID3DecisionTree._get_accuracy(y_test, self.classes)
             size, depth, first_feature = self._get_tree_info()
             ID3DecisionTree._display(accuracy, size, depth, first_feature)
+        else:
+            # cross validation
+            FOLD = 5
+            folds = self._split_data(FOLD)
+            accs = []
+
+            for k in range(FOLD):
+                D_train = [[], []]
+                D_test = [[], []]
+
+                for i in range(FOLD):
+                    fold = folds[i]
+                    if i == k:
+                        D_test = fold
+                    else:
+                        D_train[0] += fold[0]
+                        D_train[1] += fold[1]
+
+                D_train = tuple(D_train)
+                D_test = tuple(D_test)
+
+                self.train(D_train)
+                X_test, y_label = D_test
+                y_test = self.test(X_test)
+                accuracy = ID3DecisionTree._get_accuracy(y_test, y_label)
+                accs.append(accuracy)
+                size, depth, first_feature = self._get_tree_info()
+                print("====================================")
+                ID3DecisionTree._display(accuracy, size, depth, first_feature)
+            print("====================================")
+            print("Average Accuracy: %.3f" % (sum(accs) / FOLD))
 
     def _split_data(self, N):
         # split into two parts
