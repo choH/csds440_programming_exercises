@@ -276,8 +276,10 @@ class ID3DecisionTree:
 
         if self.criterion == "gain":
             criterion_func = ID3DecisionTree._gain
-        else:
+        elif self.criterion == "gain ratio":
             criterion_func = ID3DecisionTree._gain_ratio
+        else:
+            criterion_func = ID3DecisionTree._gini
 
         maxm_criterion = float('-inf')
         optimal_attribute_idx = -1
@@ -346,13 +348,17 @@ class ID3DecisionTree:
         for index, sample in enumerate(samples):
             buf_v["pos"][0].append(sample[0])
             buf_v["pos"][1].append(sample[1])
-        for index, point in enumerate(sorted(candidates)):
+        for index, point in enumerate(sorted(set(candidates))):
             cur_entropy = 0.0
 
-            buf_v["neg"][0].append(buf_v["pos"][0][0])
-            buf_v["neg"][1].append(buf_v["pos"][1][0])
-            del buf_v["pos"][0][0]
-            del buf_v["pos"][1][0]
+            # pop samples from positive to negative for equal condition
+            while buf_v["pos"][0] and (
+                    abs(buf_v["pos"][0][0][idx] - point) < 1e-7
+                    or buf_v["pos"][0][0][idx] <= point):
+                buf_v["neg"][0].append(buf_v["pos"][0][0])
+                buf_v["neg"][1].append(buf_v["pos"][1][0])
+                del buf_v["pos"][0][0]
+                del buf_v["pos"][1][0]
 
             for v in buf_v:
                 D_v = tuple(buf_v[v])
@@ -400,6 +406,71 @@ class ID3DecisionTree:
         return ent_D - weighted_sum_d_v, optimal_point
 
     @staticmethod
+    def _gini(D, idx, attr_type):
+        # calculate the entropy of each attribute value
+        X, y = D
+        optimal_point = None
+        total = len(X)
+        gini = 1
+
+        if attr_type != "CONTINUOUS":
+            count = Counter()
+            for sample in X:
+                count[sample[idx]] += 1
+
+            for freq in count:
+                gini -= (count[freq] / total)**2
+        else:
+            optimal_point, weighted_sum_d_v = ID3DecisionTree._get_max_gini(
+                D, idx)
+
+        return gini, optimal_point
+
+    @staticmethod
+    def _get_max_gini(D, idx):
+        X, y = D
+        total = len(y)
+
+        # get sorted value for idx attribute
+        sorted_attributes = sorted(map(lambda x: x[idx], X))
+
+        # get candidate split points set
+        candidates = set()
+
+        for index in range(len(sorted_attributes) - 1):
+            candidates.add(
+                (sorted_attributes[index] + sorted_attributes[index + 1]) / 2)
+
+        # sort samples
+        samples = []
+        for index, x in enumerate(X):
+            samples.append((x, y[index], x[idx]))
+        samples = sorted(samples, key=lambda x: x[2])
+
+        # get the optimal split point
+        optimal_point = None
+        max_gini = float("-inf")
+        buf_v = []
+        for index, sample in enumerate(samples):
+            buf_v.append(sample[0])
+        negative = 0
+        for index, point in enumerate(sorted(set(candidates))):
+
+            # pop samples from positive to negative for equal condition
+            while buf_v and (abs(buf_v[0][idx] - point) < 1e-7
+                             or buf_v[0][idx] <= point):
+                del buf_v[0]
+                negative += 1
+
+            positive = total - negative
+            cur_gini = 1 - (negative / total)**2 - (positive / total)**2
+
+            if cur_gini > max_gini:
+                max_gini = cur_gini
+                optimal_point = point
+        return optimal_point, max_gini
+
+    @staticmethod
     def _get_IV(D, idx, optimal_point):
         X, y = D
         total = len(y)
@@ -421,5 +492,6 @@ class ID3DecisionTree:
         """
         gain, optimal_point = ID3DecisionTree._gain(D, idx, attr_type)
         IV = ID3DecisionTree._get_IV(D, idx, optimal_point)
-        IV += 1e-8
+        if IV == 0:
+            IV = float("inf")
         return gain / IV, optimal_point
