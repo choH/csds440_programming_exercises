@@ -1,5 +1,7 @@
 # Ignored folders
-
+test.py
+mldata.py
+__pycache__/
 
 # macOS
 **/.DS_Store
