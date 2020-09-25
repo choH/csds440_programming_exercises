@@ -15,6 +15,12 @@ if len(sys.argv) != 5:
 _, path, cv, max_depth, criterion = sys.argv
 
 try:
+    cv = int(cv)
+    if cv:
+        cv = False
+    else:
+        cv = True
+
     max_depth = int(max_depth)
     if max_depth < 0:
         raise ValueError("Not valid maximum depth.")
