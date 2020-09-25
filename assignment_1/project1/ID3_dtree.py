@@ -83,6 +83,83 @@ class ID3DecisionTree:
             accuracy = ID3DecisionTree._get_accuracy(y_test, self.classes)
             size, depth, first_feature = self._get_tree_info()
             ID3DecisionTree._display(accuracy, size, depth, first_feature)
+
+    def _split_data(self, N):
+        # split into two parts
+        negative, positive = [], []
+        labels = sorted(set(self.classes))
+        for index, label in enumerate(self.classes):
+            if label == labels[0]:
+                negative.append(self.X[index])
+            else:
+                positive.append(self.X[index])
+
+        # N folds
+        folds = []
+        pos_total = len(positive)
+        neg_total = len(negative)
+        pos_step = pos_total // N
+        neg_step = neg_total // N
+        pos_start = 0
+        neg_start = 0
+        while neg_start < neg_total and pos_start < pos_total:
+            pos_end = min(pos_total, pos_start + pos_step)
+            neg_end = min(neg_total, neg_start + neg_step)
+            fold = [[], []]
+            fold[0] += positive[pos_start:pos_end]
+            fold[1] += [labels[0]] * (pos_end - pos_start)
+            fold[0] += negative[neg_start:neg_end]
+            fold[1] += [labels[1]] * (neg_end - neg_start)
+            pos_start += pos_step
+            neg_start += neg_step
+            folds.append(fold)
+        return folds
+
+    @staticmethod
+    def _display(accuracy, size, depth, first_feature):
+        print("Accuracy: %.3f" % accuracy)
+        print(f"Size: {size}")
+        print(f"Maximum Depth: {depth}")
+        print(f"First Feature: <{first_feature}>")
+
+    def _get_tree_info(self):
+        size = ID3DecisionTree._get_size(self.root)
+        depth = ID3DecisionTree._get_max_depth(self.root)
+        first_feature = self.root.attribute
+
+        return size, depth, first_feature
+
+    @staticmethod
+    def _get_max_depth(root):
+        if not root.children:
+            return 0
+
+        depth = 0
+        for child in root.children:
+            depth = max(depth, 1 + ID3DecisionTree._get_max_depth(child))
+
+        return depth
+
+    @staticmethod
+    def _get_size(root):
+        if not root.children:
+            return 1
+        size = 1
+        for child in root.children:
+            size += ID3DecisionTree._get_size(child)
+        return size
+
+    @staticmethod
+    def _get_accuracy(preds, labels):
+        correct = 0
+        total = len(preds)
+
+        for index, pred in enumerate(preds):
+            if pred == labels[index]:
+                correct += 1
+
+        return correct / total
+
     def _TreeGenerate(self, D, A, v=None, depth=0):
         """Generate a decision tree. Note that all data vectors are Lists.
 
