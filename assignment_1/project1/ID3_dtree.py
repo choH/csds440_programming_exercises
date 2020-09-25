@@ -50,6 +50,39 @@ class ID3DecisionTree:
             self.attr2idx[attr[0]] = index
         self.root = None
 
+    def train(self, D):
+        self.root = self._TreeGenerate(D, self.A)
+
+    def _test_helper(self, root, x):
+        if not root.children:
+            return root.label
+
+        attr_idx = root.attr_idx
+        for child in root.children:
+            if isinstance(child.val, tuple):
+                if child.val[0] == "<" and x[attr_idx] <= child.val[1]:
+                    return self._test_helper(child, x)
+            else:
+                if x[attr_idx] == child.val:
+                    return self._test_helper(child, x)
+
+        return self.classes[0]
+
+    def test(self, X_test):
+        y_test = []
+
+        for index, x in enumerate(X_test):
+            y_test.append(self._test_helper(self.root, x))
+
+        return y_test
+
+    def run(self):
+        if not self.cv:
+            self.train(self.D)
+            y_test = self.test(self.X)
+            accuracy = ID3DecisionTree._get_accuracy(y_test, self.classes)
+            size, depth, first_feature = self._get_tree_info()
+            ID3DecisionTree._display(accuracy, size, depth, first_feature)
     def _TreeGenerate(self, D, A, v=None, depth=0):
         """Generate a decision tree. Note that all data vectors are Lists.
 
