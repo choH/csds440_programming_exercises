@@ -3,6 +3,7 @@ test.py
 mldata.py
 __pycache__/
 440data/*
+instruction/*
 
 # macOS
 **/.DS_Store
