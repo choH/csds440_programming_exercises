@@ -35,6 +35,7 @@ And do the grading. Thank you.
 
 ## 10/16/2020 Commit 1 (Regular Submission for Programming Commit 1 & Early Submission for Programming Commit 2)
 
+Note we were having some trouble on adding graphs to Notebook, so we have provided an HTML and PDF version for your convenience.
 ### Henry
 
 * Sketched answers for (a) & (b).
