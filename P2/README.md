@@ -2,11 +2,11 @@
 
 ---
 
-Hi TA! We expect to submit 2 deliveries (the second one is not here yet, will get it done next week) for this project. For your convenience we have marked tag on each of them, so you may simply:
+Hi TA! We submitted 2 deliveries (the second one is not here yet, will get it done next week) for this project. For your convenience we have marked tag on each of them, so you may simply:
 
 ```
-git checkout tags/p2c1r    # Project 2 Commit 1 (Submission for Programming)
-git checkout tags/p1c2r    # Project 1 Commit 2 (Regular Submission for Jupyter Notebook)
+git checkout tags/p2c1r    # Project 2 Commit 1 (Submission for Programming) 10/9
+git checkout tags/p2c2r    # Project 1 Commit 2 (Regular Submission for Jupyter Notebook) 10/16
 ```
 
 And do the grading. Thank you.
@@ -31,3 +31,19 @@ And do the grading. Thank you.
 ### API
 * We experienced no trouble with API as most manipulation is done in Python itself.
 
+---
+
+## 10/16/2020 Commit 1 (Regular Submission for Programming Commit 1 & Early Submission for Programming Commit 2)
+
+### Henry
+
+* Sketched answers for (a) & (b).
+* Designed (c) with Mingyang.
+
+### Mingyang
+
+* Plotted (b)'s graph.
+* Implemented (c)
+
+### API
+* We experienced no trouble with API.
