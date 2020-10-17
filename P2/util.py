@@ -9,14 +9,17 @@ import numpy as np
 
 from preprocess import process
 from mldata import parse_c45
+import matplotlib.pyplot as plt
+
 
 def report_cross(acc, prec, rec):
     print("===============Fold report==================")
     print('Accuracy:{:.03f}'.format(acc))
     print('Precision:{:.03f}'.format(prec))
     print('Recall:{:.03f}'.format(rec))
-def report(acc, prec, rec, auc):
 
+
+def report(acc, prec, rec, auc):
     print("===============Final report=================")
     if type(acc) is list:
         print('Accuracy:{:.03f} {:.03f}'.format(np.mean(acc), np.std(acc)))
@@ -47,8 +50,8 @@ def read_data(path, n_bin=3):
     prob_name = path.split('/')[-1]
     datafile = path + '/' + prob_name + '.data'
     # data = np.loadtxt(datafile, delimiter=',', dtype=str)
-    data=parse_c45(prob_name,path)
-    data=np.asarray(data.to_float())[:5000,:]
+    data = parse_c45(prob_name, path)
+    data = np.asarray(data.to_float())
     # print(data)
 
     X = data[:, 1:-1]
@@ -119,8 +122,8 @@ def cal_AUC(y, y_hat, num_bins=10000):
     for i in range(len(y)):
         nth_bin = int(y_hat[i] / bin_width)
         # print(nth_bin)
-        pos_histogram[nth_bin] += 1 if y[i]==1 else 0
-        neg_histogram[nth_bin] += 1 if y[i]==0 else 0
+        pos_histogram[nth_bin] += 1 if y[i] == 1 else 0
+        neg_histogram[nth_bin] += 1 if y[i] == 0 else 0
     accu_neg = 0
     satisfied_pair = 0
     for i in range(num_bins):
@@ -128,3 +131,42 @@ def cal_AUC(y, y_hat, num_bins=10000):
         accu_neg += neg_histogram[i]
 
     return satisfied_pair / float(total_grid)
+
+
+def plot_roc(y_true, y_score):
+    y_true=np.asarray(y_true)
+    y_score=np.asarray(y_score)
+    pos_label = 1.
+
+    # make y_true a boolean vector
+    y_true = (y_true == pos_label)
+
+    desc_score_indices = np.argsort(y_score, kind="mergesort")[::-1]
+    y_score = y_score[desc_score_indices]
+    y_true = y_true[desc_score_indices]
+    distinct_value_indices = np.where(np.diff(y_score))[0]
+    threshold_idxs = np.r_[distinct_value_indices, y_true.size - 1]
+
+    out = np.cumsum(y_true, dtype=np.float64)
+    expected = np.sum(y_true, dtype=np.float64)
+    tps = out[threshold_idxs]
+
+    fps = 1 + threshold_idxs - tps
+    tps = np.r_[0, tps]
+    fps = np.r_[0, fps]
+
+    fpr = fps / fps[-1]
+
+    tpr = tps / tps[-1]
+    plt.title('Receiver Operating Characteristic')
+    plt.plot(fpr, tpr, 'b', )
+    plt.legend(loc='lower right')
+    plt.xlim([0, 1])
+    plt.ylim([0, 1])
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.show()
+
+
+if __name__ == "__main__":
+    plot_roc(1,1)
