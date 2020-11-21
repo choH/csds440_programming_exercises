@@ -6,6 +6,7 @@ Hi TA! We submitted 2 deliveries (the second one is not here yet, will get it do
 
 ```
 git checkout tags/p3c1r    # Project 2 Commit 1 (Submission for Programming) 11/13
+git checkout tags/p3c2r    # Project 2 Commit 2 (Submission for Notebook) 11/20
 ```
 
 And do the grading. Thank you.
@@ -24,6 +25,23 @@ And do the grading. Thank you.
 
 * Implemented adaboost.
 * Help to refactor pervious projects' code as Henry is sometime not familiar with some module.
+
+### API
+* N/A
+
+
+---
+
+## 11/20/2020 Commit 1 (All programming done)
+
+### Henry
+
+* Insights and implementation on research extension.
+* T-test
+
+### Mingyang
+
+* Verify results on problem A & B.
 
 ### API
 * N/A
